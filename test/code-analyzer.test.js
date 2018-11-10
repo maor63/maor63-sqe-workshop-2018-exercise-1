@@ -101,4 +101,15 @@ describe('The javascript parser', () => {
             '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td>maor</td></tr>'
         );
     });
+
+    it('is parse simple assignment expression', () => {
+       assert.equal (
+           convertToTableRows(parseCode(
+               `let c;
+                c = 34;
+            `)),
+            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td></tr>' +
+           '<tr><td>2</td><td>AssignmentExpression</td><td>c</td><td>34</td></tr>'
+       );
+    });
 });

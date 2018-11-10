@@ -27,6 +27,11 @@ function convertToTableRows(parsedCode) {
             outputRows += extractTableRow(varData);
             outputRows += convertToTableRows(parsedCode.body[i].body);
         }
+        else if(parsedCode.body[i].type === 'AssignmentExpression'){
+            let varData = parsedCode.body[i];
+            outputRows += extractTableRow(varData);
+           
+        }
     }
 
     return outputRows;

@@ -1,0 +1,17 @@
+{
+  "type": "Program",
+  "type": "FunctionDeclaration",
+  "type": "Identifier",
+  "type": "BlockStatement",
+  "type": "VariableDeclaration",
+  "type": "VariableDeclarator",
+  "type": "ExpressionStatement",
+  "type": "AssignmentExpression",
+  "type": "BinaryExpression",
+  "type": "WhileStatement",
+  "type": "IfStatement",
+  "type": "MemberExpression",
+  "type": "ReturnStatement",
+  "type": "UnaryExpression",
+  "type": "EmptyStatement",
+}
