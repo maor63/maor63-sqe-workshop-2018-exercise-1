@@ -33,7 +33,7 @@ function convertStatementToRows(parsedCode) {
         let index = parsedCode.loc.start.line;
         let type = parsedCode.type;
         let name = evalExpression(parsedCode.id);
-        let value = parsedCode.init == null ? '' : parsedCode.init.value;
+        let value = parsedCode.init == null ? '' : evalExpression(parsedCode.init);
         outputRows += getTableRow(index, type, name, '', value);
     }
     else if (parsedCode.type === 'ExpressionStatement') {
@@ -45,6 +45,7 @@ function convertStatementToRows(parsedCode) {
         let name = evalExpression(parsedCode.id);
         outputRows += getTableRow(index, type, name, '', '');
         for (let i = 0; i < parsedCode.params.length; i++) {
+            console.log("parse param");
             let type = 'VariableDeclarator';
             let paramName = evalExpression(parsedCode.params[i]);
             outputRows += getTableRow(index, type, paramName, '', '');
