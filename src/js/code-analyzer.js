@@ -43,9 +43,11 @@ function convertStatementToRows(parsedCode) {
         let index = parsedCode.loc.start.line;
         let type = parsedCode.type;
         let name = evalExpression(parsedCode.id);
-        outputRows += getTableRow(index, type, name, '');
+        outputRows += getTableRow(index, type, name, '', '');
         for (let i = 0; i < parsedCode.params.length; i++) {
-            outputRows += convertStatementToRows(parsedCode.params[i]);
+            let type = 'VariableDeclarator';
+            let paramName = evalExpression(parsedCode.params[i]);
+            outputRows += getTableRow(index, type, paramName, '', '');
         }
         outputRows += convertStatementToRows(parsedCode.body);
     }

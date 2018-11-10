@@ -112,4 +112,22 @@ describe('The javascript parser', () => {
             '<tr><td>2</td><td>AssignmentExpression</td><td>c</td><td></td><td>34</td></tr>'
         );
     });
+
+    it('is parsing a function with args 2 line body and var declarations', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `let c, g;
+                function foo(a, b){
+                let id = a; 
+                let name = b;
+            }`)),
+            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td><td></td></tr>' +
+            '<tr><td>1</td><td>VariableDeclarator</td><td>g</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>FunctionDeclaration</td><td>foo</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>VariableDeclarator</td><td>a</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>VariableDeclarator</td><td>b</td><td></td><td></td></tr>' +
+            '<tr><td>3</td><td>VariableDeclarator</td><td>id</td><td></td><td>a</td></tr>' +
+            '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td></td><td>b</td></tr>'
+        );
+    });
 });
