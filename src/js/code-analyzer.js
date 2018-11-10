@@ -13,68 +13,72 @@ function extractTableRow(varData) {
     return row;
 }
 
-function convertNodeToRows(parsedCode) {
+function getTableRow(index, type, name, condition, value) {
+    return '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, condition, value);
+}
+
+function convertStatementToRows(parsedCode) {
     let outputRows = '';
-    if(parsedCode.type === 'Program' || parsedCode.type === 'BlockStatement'  ) {
-        for(let i = 0; i < parsedCode.body.length; i++) {
-            outputRows += convertNodeToRows(parsedCode.body[i]);
+    if (parsedCode.type === 'Program' || parsedCode.type === 'BlockStatement') {
+        for (let i = 0; i < parsedCode.body.length; i++) {
+            outputRows += convertStatementToRows(parsedCode.body[i]);
         }
     }
-    else if(parsedCode.type === 'VariableDeclaration'){
-        for(let i = 0; i < parsedCode.declarations.length; i++) {
-            outputRows += convertNodeToRows(parsedCode.declarations[i]);
+    else if (parsedCode.type === 'VariableDeclaration') {
+        for (let i = 0; i < parsedCode.declarations.length; i++) {
+            outputRows += convertStatementToRows(parsedCode.declarations[i]);
         }
     }
-    else if(parsedCode.type === 'VariableDeclarator') {
+    else if (parsedCode.type === 'VariableDeclarator') {
         let index = parsedCode.loc.start.line;
         let type = parsedCode.type;
-        let name  = evalExpression(parsedCode.id);
+        let name = evalExpression(parsedCode.id);
         let value = parsedCode.init == null ? '' : parsedCode.init.value;
-        outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, value);
+        outputRows += getTableRow(index, type, name, '', value);
     }
-    else if(parsedCode.type === 'ExpressionStatement') {
-        outputRows += convertNodeToRows(parsedCode.expression);
+    else if (parsedCode.type === 'ExpressionStatement') {
+        outputRows += convertStatementToRows(parsedCode.expression);
     }
-    else if(parsedCode.type === 'FunctionDeclaration') {
+    else if (parsedCode.type === 'FunctionDeclaration') {
         let index = parsedCode.loc.start.line;
         let type = parsedCode.type;
-        let name  = evalExpression(parsedCode.id);
-        outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, '');
-        for(let i = 0; i < parsedCode.params.length; i++) {
-            outputRows += convertNodeToRows(parsedCode.params[i]);
+        let name = evalExpression(parsedCode.id);
+        outputRows += getTableRow(index, type, name, '');
+        for (let i = 0; i < parsedCode.params.length; i++) {
+            outputRows += convertStatementToRows(parsedCode.params[i]);
         }
-        outputRows += convertNodeToRows(parsedCode.body);
+        outputRows += convertStatementToRows(parsedCode.body);
     }
-    else if(parsedCode.type === 'AssignmentExpression') {
+    else if (parsedCode.type === 'AssignmentExpression') {
         let index = parsedCode.loc.start.line;
         let type = parsedCode.type;
-        let left =  evalExpression(parsedCode.left);
-        let right =  evalExpression(parsedCode.right);
-        outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, left, right);
+        let left = evalExpression(parsedCode.left);
+        let right = evalExpression(parsedCode.right);
+        outputRows += getTableRow(index, type, left, '', right);
     }
 
     return outputRows;
 }
 
-function evalExpression(expression){
-    if(expression.type === 'Identifier'){
+function evalExpression(expression) {
+    if (expression.type === 'Identifier') {
         return expression.name;
     }
-    else if(expression.type === 'MemberExpression'){
+    else if (expression.type === 'MemberExpression') {
         let member = evalExpression(expression.object);
         let property = evalExpression(expression.property);
-        return member +'[' + property + ']';
+        return member + '[' + property + ']';
     }
-    else if(expression.type === 'Literal'){
+    else if (expression.type === 'Literal') {
         return expression.value;
     }
-    else if(expression.type === 'CallExpression'){
+    else if (expression.type === 'CallExpression') {
         let callee = evalExpression(expression.callee);
         let args = [];
-        for(let i = 0; i < expression.arguments.length; i++) {
+        for (let i = 0; i < expression.arguments.length; i++) {
             args.push(evalExpression(expression.arguments[i]));
         }
-        return callee +'(' + args.join(',') + ')';
+        return callee + '(' + args.join(',') + ')';
     }
 }
 
@@ -85,4 +89,4 @@ String.prototype.format = function () {
     });
 };
 
-export {parseCode, convertNodeToRows};
+export {parseCode, convertStatementToRows};
