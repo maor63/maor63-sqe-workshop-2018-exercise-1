@@ -75,41 +75,41 @@ describe('The javascript parser', () => {
         );
     });
 
-    // it('is parsing a simple function 1 line body', () => {
-    //     assert.equal(
-    //         convertNodeToRows(parseCode(
-    //             `function foo(){
-    //             let a = 'd';
-    //         }`)),
-    //         '<tr><td>1</td><td>FunctionDeclaration</td><td>foo</td><td></td></tr>' +
-    //         '<tr><td>2</td><td>VariableDeclarator</td><td>a</td><td>d</td></tr>'
-    //     );
-    // });
-    //
-    // it('is parsing a simple function 2 line body and var declarations', () => {
-    //     assert.equal(
-    //         convertNodeToRows(parseCode(
-    //             `let c, g;
-    //             function foo(){
-    //             let id = 1;
-    //             let name = 'maor';
-    //         }`)),
-    //         '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td></tr>' +
-    //         '<tr><td>1</td><td>VariableDeclarator</td><td>g</td><td></td></tr>' +
-    //         '<tr><td>2</td><td>FunctionDeclaration</td><td>foo</td><td></td></tr>' +
-    //         '<tr><td>3</td><td>VariableDeclarator</td><td>id</td><td>1</td></tr>' +
-    //         '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td>maor</td></tr>'
-    //     );
-    // });
-    //
-    // it('is parse simple assignment expression', () => {
-    //     assert.equal(
-    //         convertNodeToRows(parseCode(
-    //             `let c;
-    //             c = 34;
-    //         `)),
-    //         '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td></tr>' +
-    //         '<tr><td>2</td><td>AssignmentExpression</td><td>c</td><td>34</td></tr>'
-    //     );
-    // });
+    it('is parsing a simple function 1 line body', () => {
+        assert.equal(
+            convertNodeToRows(parseCode(
+                `function foo(){
+                let a = 'd';
+            }`)),
+            '<tr><td>1</td><td>FunctionDeclaration</td><td>foo</td><td></td></tr>' +
+            '<tr><td>2</td><td>VariableDeclarator</td><td>a</td><td>d</td></tr>'
+        );
+    });
+
+    it('is parsing a simple function 2 line body and var declarations', () => {
+        assert.equal(
+            convertNodeToRows(parseCode(
+                `let c, g;
+                function foo(){
+                let id = 1;
+                let name = 'maor';
+            }`)),
+            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td></tr>' +
+            '<tr><td>1</td><td>VariableDeclarator</td><td>g</td><td></td></tr>' +
+            '<tr><td>2</td><td>FunctionDeclaration</td><td>foo</td><td></td></tr>' +
+            '<tr><td>3</td><td>VariableDeclarator</td><td>id</td><td>1</td></tr>' +
+            '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td>maor</td></tr>'
+        );
+    });
+
+    it('is parse simple assignment expression', () => {
+        assert.equal(
+            convertNodeToRows(parseCode(
+                `let c;
+                c = 34;
+            `)),
+            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td></tr>' +
+            '<tr><td>2</td><td>AssignmentExpression</td><td>c</td><td>34</td></tr>'
+        );
+    });
 });

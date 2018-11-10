@@ -15,9 +15,9 @@ function extractTableRow(varData) {
 
 function convertNodeToRows(parsedCode) {
     let outputRows = '';
-    if(parsedCode.type === 'Program') {
+    if(parsedCode.type === 'Program' || parsedCode.type === 'BlockStatement'  ) {
         for(let i = 0; i < parsedCode.body.length; i++) {
-            outputRows += convertNodeToRows(parsedCode.body[i])
+            outputRows += convertNodeToRows(parsedCode.body[i]);
         }
     }
     else if(parsedCode.type === 'VariableDeclaration'){
@@ -28,12 +28,22 @@ function convertNodeToRows(parsedCode) {
     else if(parsedCode.type === 'VariableDeclarator') {
         let index = parsedCode.loc.start.line;
         let type = parsedCode.type;
-        let name  = parsedCode.id.name;
+        let name  = evalExpression(parsedCode.id);
         let value = parsedCode.init == null ? '' : parsedCode.init.value;
         outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, value);
     }
     else if(parsedCode.type === 'ExpressionStatement') {
         outputRows += convertNodeToRows(parsedCode.expression);
+    }
+    else if(parsedCode.type === 'FunctionDeclaration') {
+        let index = parsedCode.loc.start.line;
+        let type = parsedCode.type;
+        let name  = evalExpression(parsedCode.id);
+        outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, '');
+        for(let i = 0; i < parsedCode.params.length; i++) {
+            outputRows += convertNodeToRows(parsedCode.params[i]);
+        }
+        outputRows += convertNodeToRows(parsedCode.body);
     }
     else if(parsedCode.type === 'AssignmentExpression') {
         let index = parsedCode.loc.start.line;
