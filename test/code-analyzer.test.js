@@ -116,4 +116,46 @@ describe('The javascript parser', () => {
             '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td></td><td>b</td></tr>'
         );
     });
+
+    it('is parsing a simple while loop', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `while(true){};
+            `)),
+            '<tr><td>1</td><td>WhileStatement</td><td></td><td>true</td><td></td></tr>'
+        );
+    });
+
+    it('is parsing a while loop with condition and body', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `while(a < 3){
+                    a=5;
+                };
+            `)),
+            '<tr><td>1</td><td>WhileStatement</td><td></td><td>a<3</td><td></td></tr>' +
+            '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>5</td></tr>'
+        );
+    });
+
+    it('is parsing a simple if statement', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `if(true){};
+            `)),
+            '<tr><td>1</td><td>IfStatement</td><td></td><td>true</td><td></td></tr>'
+        );
+    });
+
+    it('is parsing a simple if statement', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `if(a < 6){
+                    a = 8;
+                };
+            `)),
+            '<tr><td>1</td><td>IfStatement</td><td></td><td>a<6</td><td></td></tr>' +
+            '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>8</td></tr>'
+        );
+    });
 });

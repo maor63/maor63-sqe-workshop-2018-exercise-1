@@ -4,34 +4,26 @@ const parseCode = (codeToParse) => {
     return esprima.parseScript(codeToParse, {loc: true});
 };
 
-function extractTableRow(varData) {
-    let index = varData.loc.start.line;
-    let type = varData.type;
-    let name = varData.id.name;
-    let value = varData.init == null ? '' : varData.init.value;
-    let row = '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, value);
-    return row;
-}
-
 function getTableRow(index, type, name, condition, value) {
     return '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, condition, value);
 }
 
 function convertStatementToRows(parsedCode) {
     let outputRows = '';
+    let index = parsedCode.loc.start.line;
+    let type = parsedCode.type;
     if (parsedCode.type === 'Program' || parsedCode.type === 'BlockStatement') {
         for (let i = 0; i < parsedCode.body.length; i++) {
             outputRows += convertStatementToRows(parsedCode.body[i]);
         }
     }
     else if (parsedCode.type === 'VariableDeclaration') {
-        for (let i = 0; i < parsedCode.declarations.length; i++) {
-            outputRows += convertStatementToRows(parsedCode.declarations[i]);
+        let statementList = parsedCode.declarations;
+        for (let i = 0; i < statementList.length; i++) {
+            outputRows += convertStatementToRows(statementList[i]);
         }
     }
     else if (parsedCode.type === 'VariableDeclarator') {
-        let index = parsedCode.loc.start.line;
-        let type = parsedCode.type;
         let name = evalExpression(parsedCode.id);
         let value = parsedCode.init == null ? '' : evalExpression(parsedCode.init);
         outputRows += getTableRow(index, type, name, '', value);
@@ -40,12 +32,9 @@ function convertStatementToRows(parsedCode) {
         outputRows += convertStatementToRows(parsedCode.expression);
     }
     else if (parsedCode.type === 'FunctionDeclaration') {
-        let index = parsedCode.loc.start.line;
-        let type = parsedCode.type;
         let name = evalExpression(parsedCode.id);
         outputRows += getTableRow(index, type, name, '', '');
         for (let i = 0; i < parsedCode.params.length; i++) {
-            console.log("parse param");
             let type = 'VariableDeclarator';
             let paramName = evalExpression(parsedCode.params[i]);
             outputRows += getTableRow(index, type, paramName, '', '');
@@ -53,11 +42,22 @@ function convertStatementToRows(parsedCode) {
         outputRows += convertStatementToRows(parsedCode.body);
     }
     else if (parsedCode.type === 'AssignmentExpression') {
-        let index = parsedCode.loc.start.line;
-        let type = parsedCode.type;
         let left = evalExpression(parsedCode.left);
         let right = evalExpression(parsedCode.right);
         outputRows += getTableRow(index, type, left, '', right);
+    }
+    else if (parsedCode.type === 'WhileStatement') {
+        let condition = evalExpression(parsedCode.test);
+        outputRows += getTableRow(index, type, '', condition, '');
+        outputRows += convertStatementToRows(parsedCode.body);
+    }
+    else if (parsedCode.type === 'IfStatement') {
+        let condition = evalExpression(parsedCode.test);
+        outputRows += getTableRow(index, type, '', condition, '');
+        outputRows += convertStatementToRows(parsedCode.consequent);
+        if (parsedCode.alternate !== null){
+            outputRows += convertStatementToRows(parsedCode.alternate);
+        }
     }
 
     return outputRows;
@@ -82,6 +82,12 @@ function evalExpression(expression) {
             args.push(evalExpression(expression.arguments[i]));
         }
         return callee + '(' + args.join(',') + ')';
+    }
+    else if (expression.type === 'BinaryExpression') {
+        let left = evalExpression(expression.left);
+        let right = evalExpression(expression.right);
+        let operator = expression.operator;
+        return '{}{}{}'.format(left, operator, right);
     }
 }
 
