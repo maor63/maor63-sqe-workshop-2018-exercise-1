@@ -13,28 +13,59 @@ function extractTableRow(varData) {
     return row;
 }
 
-function convertToTableRows(parsedCode) {
+function convertNodeToRows(parsedCode) {
     let outputRows = '';
-    for (let i = 0; i < parsedCode.body.length; i++) {
-        if(parsedCode.body[i].type === 'VariableDeclaration') {
-            for(let j = 0; j < parsedCode.body[i].declarations.length; j++) {
-                let varData = parsedCode.body[i].declarations[j];
-                outputRows += extractTableRow(varData);
-            }
+    if(parsedCode.type === 'Program') {
+        for(let i = 0; i < parsedCode.body.length; i++) {
+            outputRows += convertNodeToRows(parsedCode.body[i])
         }
-        else if(parsedCode.body[i].type === 'FunctionDeclaration'){
-            let varData = parsedCode.body[i];
-            outputRows += extractTableRow(varData);
-            outputRows += convertToTableRows(parsedCode.body[i].body);
+    }
+    else if(parsedCode.type === 'VariableDeclaration'){
+        for(let i = 0; i < parsedCode.declarations.length; i++) {
+            outputRows += convertNodeToRows(parsedCode.declarations[i]);
         }
-        else if(parsedCode.body[i].type === 'AssignmentExpression'){
-            let varData = parsedCode.body[i];
-            outputRows += extractTableRow(varData);
-           
-        }
+    }
+    else if(parsedCode.type === 'VariableDeclarator') {
+        let index = parsedCode.loc.start.line;
+        let type = parsedCode.type;
+        let name  = parsedCode.id.name;
+        let value = parsedCode.init == null ? '' : parsedCode.init.value;
+        outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, value);
+    }
+    else if(parsedCode.type === 'ExpressionStatement') {
+        outputRows += convertNodeToRows(parsedCode.expression);
+    }
+    else if(parsedCode.type === 'AssignmentExpression') {
+        let index = parsedCode.loc.start.line;
+        let type = parsedCode.type;
+        let left =  evalExpression(parsedCode.left);
+        let right =  evalExpression(parsedCode.right);
+        outputRows += '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, left, right);
     }
 
     return outputRows;
+}
+
+function evalExpression(expression){
+    if(expression.type === 'Identifier'){
+        return expression.name;
+    }
+    else if(expression.type === 'MemberExpression'){
+        let member = evalExpression(expression.object);
+        let property = evalExpression(expression.property);
+        return member +'[' + property + ']';
+    }
+    else if(expression.type === 'Literal'){
+        return expression.value;
+    }
+    else if(expression.type === 'CallExpression'){
+        let callee = evalExpression(expression.callee);
+        let args = [];
+        for(let i = 0; i < expression.arguments.length; i++) {
+            args.push(evalExpression(expression.arguments[i]));
+        }
+        return callee +'(' + args.join(',') + ')';
+    }
 }
 
 String.prototype.format = function () {
@@ -44,4 +75,4 @@ String.prototype.format = function () {
     });
 };
 
-export {parseCode, convertToTableRows};
+export {parseCode, convertNodeToRows};

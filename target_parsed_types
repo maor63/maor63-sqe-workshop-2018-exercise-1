@@ -1,17 +1,98 @@
 {
   "type": "Program",
   "type": "FunctionDeclaration",
-  "type": "Identifier",
-  "type": "BlockStatement",
+  -"type": "Identifier",
+  -"type": "BlockStatement",
   "type": "VariableDeclaration",
   "type": "VariableDeclarator",
   "type": "ExpressionStatement",
-  "type": "AssignmentExpression",
-  "type": "BinaryExpression",
+  -"type": "AssignmentExpression",
+  -"type": "BinaryExpression",
   "type": "WhileStatement",
   "type": "IfStatement",
-  "type": "MemberExpression",
+  -"type": "MemberExpression",
   "type": "ReturnStatement",
-  "type": "UnaryExpression",
-  "type": "EmptyStatement",
+  -"type": "UnaryExpression",
+  -"type": "EmptyStatement",
 }
+
+Expression:
+	type:
+
+	Identifier:
+		name: string
+
+	FunctionExpression:
+		id: Identifier | BindingPattern
+		params: FunctionParameter[];
+		body: BlockStatement
+
+	FunctionParameter = AssignmentPattern | Identifier | BindingPattern;
+
+	MemberExpression:
+		object: Expression
+		property: Expression
+
+	UnaryExpression
+		operator: string
+		argument: Expression
+		prefix
+
+	BinaryExpression
+		operator: string
+		left: Expression
+		right: Expression
+
+	AssignmentExpression
+		operator: string
+		left: Expression
+		right: Expression
+
+Statement:
+	type
+	EmptyStatement:
+
+	BlockStatement:
+		 body: StatementListItem[];
+
+	StatementListItem = Declaration | Statement;
+	Declaration = ClassDeclaration | FunctionDeclaration |  VariableDeclaration;
+
+	ExpressionStatement:
+		expression: Expression
+
+	ForStatement:
+		init: Expression | VariableDeclaration | null
+		test: Expression | null;
+		update: Expression | null;
+		body: Statement
+
+	Function Declaration
+		id: Identifier | BindingPattern
+		params: FunctionParameter[]
+		body: BlockStatement
+
+	IfStatement
+		test: Expression
+		consequent: Statement
+		alternate?: Statement
+
+	Return Statement:
+		argument: Expression
+
+	Variable Declaration:
+		declarations: VariableDeclarator[]
+		kind
+
+	VariableDeclarator:
+		id: Identifier | BindingPattern
+		init
+
+	WhileStatement:
+		test: Expression
+		body: Statement
+
+
+
+
+
