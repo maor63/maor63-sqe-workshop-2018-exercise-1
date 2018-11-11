@@ -158,4 +158,39 @@ describe('The javascript parser', () => {
             '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>8</td></tr>'
         );
     });
+    it('is parsing a simple if statement with else', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `if(a < 6){
+                    a = 8;
+                }
+                else{
+                a=2;
+                }
+            `)),
+            '<tr><td>1</td><td>IfStatement</td><td></td><td>a<6</td><td></td></tr>' +
+            '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>8</td></tr>' +
+            '<tr><td>4</td><td>else statement</td><td></td><td></td><td></td></tr>' +
+            '<tr><td>5</td><td>AssignmentExpression</td><td>a</td><td></td><td>2</td></tr>'
+        );
+    });
+
+    it('is parsing a if statement with else and else if', () => {
+        assert.equal(
+            convertStatementToRows(parseCode(
+                `if (a < 2)
+                    high = mid - 1
+                else if (X > V)
+                    low = mid + 1;
+                else
+                    mid = 4;
+            `)),
+            '<tr><td>1</td><td>IfStatement</td><td></td><td>a<2</td><td></td></tr>' +
+            '<tr><td>2</td><td>AssignmentExpression</td><td>high</td><td></td><td>mid-1</td></tr>' +
+            '<tr><td>3</td><td>else if statement</td><td></td><td>X>V</td><td></td></tr>' +
+            '<tr><td>4</td><td>AssignmentExpression</td><td>low</td><td></td><td>mid+1</td></tr>' +
+            '<tr><td>5</td><td>else statement</td><td></td><td></td><td></td></tr>' +
+            '<tr><td>6</td><td>AssignmentExpression</td><td>mid</td><td></td><td>4</td></tr>'
+        );
+    });
 });
