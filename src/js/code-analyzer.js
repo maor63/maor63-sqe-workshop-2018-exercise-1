@@ -11,6 +11,7 @@ let evalFunctions = {
     CallExpression: evalCallExpression,
     BinaryExpression: evalBinaryExpression,
     Identifier: evalIdentifier,
+    UnaryExpression: evalUnaryExpression,
 };
 
 let parseFunctions = {
@@ -24,6 +25,7 @@ let parseFunctions = {
     WhileStatement: parseWhileStatement,
     IfStatement: parseIfStatement,
     CallExpression: parseCallExpression,
+    ReturnStatement: parseReturnStatement,
 };
 
 function createTableRow(index, type, name, condition, value) {
@@ -108,6 +110,12 @@ function parseCallExpression(parsedCode) {
     return createTableRow(index, 'call expression', name, '', '');
 }
 
+function parseReturnStatement(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    let value = evalExpression(parsedCode.argument);
+    return createTableRow(index, 'return statement', '', '', value);
+}
+
 function parseStatement(parsedCode, inIfStatement = false) {
     if (parsedCode.type in parseFunctions)
         return parseFunctions[parsedCode.type](parsedCode, inIfStatement);
@@ -134,23 +142,33 @@ function evalCallExpression(expression) {
     return callee + '(' + args.join(',') + ')';
 }
 
-function evalBinaryExpression(expression) {
-    let left = evalExpression(expression.left);
-    let right = evalExpression(expression.right);
+function evalBinaryExpression(expression, inBinaryExpression) {
+    let left = evalExpression(expression.left, true);
+    let right = evalExpression(expression.right, true);
     let operator = expression.operator;
-    return '{}{}{}'.format(left, operator, right);
+    if(inBinaryExpression)
+        return '({}{}{})'.format(left, operator, right);
+    else
+        return '{}{}{}'.format(left, operator, right);
 }
 
 function evalIdentifier(expression) {
     return expression.name;
 }
 
-function evalExpression(expression) {
+function evalUnaryExpression(expression) {
+    let argument = evalExpression(expression.argument);
+    let operator = expression.operator;
+    return '{}{}'.format(operator, argument);
+}
+
+function evalExpression(expression, inBinaryExpression = false) {
     if (expression.type in evalFunctions)
-        return evalFunctions[expression.type](expression);
+        return evalFunctions[expression.type](expression, inBinaryExpression);
     else
         return '';
 }
+
 
 String.prototype.format = function () {
     var i = 0, args = arguments;

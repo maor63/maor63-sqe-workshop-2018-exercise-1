@@ -1,49 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="src/css/parserStyle.css">
-    </head>
-    <body>
-        <table>
-            <tr>
-                <td>
-                    <div>
-                        <label>Enter code here</label>
-                    </div>
-                </td>
-                <td>
-                    <div>
-                        <label>Parsed code here</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="textAreaWrapper">
-                        <textarea id="codePlaceholder" title="Enter code here"></textarea>
-                    </div>
-                </td>
-                <td>
-                    <div class="textAreaWrapper">
-                        <textarea id="parsedCode" title="Parse code"></textarea>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div>
-                        <button id="codeSubmissionButton">Parse code</button>
-                    </div>
-                </td>
-                <td>
-                    <div id="codeParseResults">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="src/css/parserStyle.css">
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <div>
+                <label>Enter code here</label>
+            </div>
+        </td>
+        <td>
+            <div>
+                <label>Parsed code here</label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="textAreaWrapper">
+                <textarea id="codePlaceholder" title="Enter code here"></textarea>
+            </div>
+        </td>
+        <td>
+            <div class="textAreaWrapper">
+                <textarea id="parsedCode" title="Parse code"></textarea>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                <button id="codeSubmissionButton">Parse code</button>
+            </div>
+        </td>
+        <td>
+            <div id="codeParseResults">
+                <table>
+                    <tr>
+                        <td>Line</td>
+                        <td>Type</td>
+                        <td>Name</td>
+                        <td>Condition</td>
+                        <td>Value</td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
 
-                    </div>
-                </td>
-            </tr>
-        </table>
-
-        <script src="dist/bundle.js"></script>
-    </body>
+<script src="dist/bundle.js"></script>
+</body>
 </html>

@@ -220,4 +220,37 @@ describe('The javascript parser', () => {
             '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>mid(2)</td></tr>'
         );
     });
+
+    it('is parsing a function statement with return', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `function foo(){
+                    return 2;
+                }
+            `)),
+            '<tr><td>1</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>return statement</td><td></td><td></td><td>2</td></tr>'
+        );
+    });
+
+    it('is parsing a function statement with return with unary expression', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `function foo(){
+                    return -2;
+                }
+            `)),
+            '<tr><td>1</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>return statement</td><td></td><td></td><td>-2</td></tr>'
+        );
+    });
+
+    it('is parsing a binary expression inside binary expression', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `let a = (2+3)/6
+            `)),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>(2+3)/6</td></tr>'
+        );
+    });
 });
