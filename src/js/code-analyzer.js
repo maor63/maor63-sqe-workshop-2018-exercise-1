@@ -4,17 +4,6 @@ const parseCode = (codeToParse) => {
     return esprima.parseScript(codeToParse, {loc: true});
 };
 
-function createTableRow(index, type, name, condition, value) {
-    return '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, condition, value);
-}
-
-function parseStatementList(statementList, inIfStatement) {
-    let outputRows = '';
-    for (let i = 0; i < statementList.length; i++) {
-        outputRows += convertStatementToRows(statementList[i], inIfStatement);
-    }
-    return outputRows;
-}
 
 let evalFunctions = {
     MemberExpression: evalMemberExpression,
@@ -34,7 +23,21 @@ let parseFunctions = {
     AssignmentExpression: parseAssignmentExpression,
     WhileStatement: parseWhileStatement,
     IfStatement: parseIfStatement,
+    CallExpression: parseCallExpression,
 };
+
+function createTableRow(index, type, name, condition, value) {
+    return '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(index, type, name, condition, value);
+}
+
+function parseStatementList(statementList, inIfStatement) {
+    let outputRows = '';
+    for (let i = 0; i < statementList.length; i++) {
+        outputRows += parseStatement(statementList[i], inIfStatement);
+    }
+    return outputRows;
+}
+
 
 function parseBlockStatement(parsedCode, inIfStatement) {
     return parseStatementList(parsedCode.body, inIfStatement);
@@ -46,47 +49,42 @@ function parseVariableDeclaration(parsedCode) {
 
 function parseVariableDeclarator(parsedCode) {
     let index = parsedCode.loc.start.line;
-    let type = parsedCode.type;
     let name = evalExpression(parsedCode.id);
     let value = parsedCode.init == null ? '' : evalExpression(parsedCode.init);
-    return createTableRow(index, type, name, '', value);
+    return createTableRow(index, 'variable declarator', name, '', value);
 }
 
 function parseExpressionStatement(parsedCode, inIfStatement) {
     let outputRows = '';
     if (inIfStatement)
         outputRows += createTableRow(parsedCode.loc.start.line - 1, 'else statement', '', '', '');
-    return outputRows + convertStatementToRows(parsedCode.expression);
+    return outputRows + parseStatement(parsedCode.expression);
 }
 
 function parseFunctionDeclaration(parsedCode) {
     let index = parsedCode.loc.start.line;
-    let type = parsedCode.type;
     let name = evalExpression(parsedCode.id);
-    let outputRows = createTableRow(index, type, name, '', '');
+    let outputRows = createTableRow(index, 'function declaration', name, '', '');
     for (let i = 0; i < parsedCode.params.length; i++) {
-        let type = 'VariableDeclarator';
         let paramName = evalExpression(parsedCode.params[i]);
-        outputRows += createTableRow(index, type, paramName, '', '');
+        outputRows += createTableRow(index, 'variable declarator', paramName, '', '');
     }
-    outputRows += convertStatementToRows(parsedCode.body);
+    outputRows += parseStatement(parsedCode.body);
     return outputRows;
 }
 
 function parseAssignmentExpression(parsedCode) {
     let index = parsedCode.loc.start.line;
-    let type = parsedCode.type;
     let left = evalExpression(parsedCode.left);
     let right = evalExpression(parsedCode.right);
-    return createTableRow(index, type, left, '', right);
+    return createTableRow(index, 'assignment expression', left, '', right);
 }
 
 function parseWhileStatement(parsedCode) {
     let index = parsedCode.loc.start.line;
-    let type = parsedCode.type;
     let condition = evalExpression(parsedCode.test);
-    let outputRows = createTableRow(index, type, '', condition, '');
-    return outputRows + convertStatementToRows(parsedCode.body);
+    let outputRows = createTableRow(index, 'while statement', '', condition, '');
+    return outputRows + parseStatement(parsedCode.body);
 }
 
 function parseIfStatement(parsedCode, inIfStatement) {
@@ -97,15 +95,21 @@ function parseIfStatement(parsedCode, inIfStatement) {
     if (inIfStatement)
         outputRows += createTableRow(index, 'else if statement', '', condition, '');
     else
-        outputRows += createTableRow(index, type, '', condition, '');
-    outputRows += convertStatementToRows(parsedCode.consequent);
+        outputRows += createTableRow(index, 'if statement', '', condition, '');
+    outputRows += parseStatement(parsedCode.consequent);
     if (parsedCode.alternate !== null) {
-        outputRows += convertStatementToRows(parsedCode.alternate, true);
+        outputRows += parseStatement(parsedCode.alternate, true);
     }
     return outputRows;
 }
 
-function convertStatementToRows(parsedCode, inIfStatement = false) {
+function parseCallExpression(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    let name = evalExpression(parsedCode);
+    return createTableRow(index, 'call expression', name, '', '');
+}
+
+function parseStatement(parsedCode, inIfStatement = false) {
     if (parsedCode.type in parseFunctions)
         return parseFunctions[parsedCode.type](parsedCode, inIfStatement);
     else
@@ -156,4 +160,4 @@ String.prototype.format = function () {
     });
 };
 
-export {parseCode, convertStatementToRows};
+export {parseCode, parseStatement};

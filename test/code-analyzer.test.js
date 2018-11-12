@@ -1,166 +1,166 @@
 import assert from 'assert';
 import {parseCode} from '../src/js/code-analyzer';
-import {convertStatementToRows} from '../src/js/code-analyzer';
+import {parseStatement} from '../src/js/code-analyzer';
 
 describe('The javascript parser', () => {
     it('is parsing an empty string to no table rows', () => {
         assert.equal(
-            convertStatementToRows(parseCode('')),
+            parseStatement(parseCode('')),
             ''
         );
     });
 
     it('is parsing a simple variable declaration to 1 table row', () => {
         assert.equal(
-            convertStatementToRows(parseCode('let a = 1;')),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>a</td><td></td><td>1</td></tr>'
+            parseStatement(parseCode('let a = 1;')),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>1</td></tr>'
         );
     });
 
     it('is parsing a 3 simple variable declaration to 3 table row', () => {
         assert.equal(
-            convertStatementToRows(parseCode('let a = 1;\nlet b = 4;\nlet c = 1;')),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>a</td><td></td><td>1</td></tr>' +
-            '<tr><td>2</td><td>VariableDeclarator</td><td>b</td><td></td><td>4</td></tr>' +
-            '<tr><td>3</td><td>VariableDeclarator</td><td>c</td><td></td><td>1</td></tr>'
+            parseStatement(parseCode('let a = 1;\nlet b = 4;\nlet c = 1;')),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>1</td></tr>' +
+            '<tr><td>2</td><td>variable declarator</td><td>b</td><td></td><td>4</td></tr>' +
+            '<tr><td>3</td><td>variable declarator</td><td>c</td><td></td><td>1</td></tr>'
         );
     });
 
     it('is parsing a simple variable declaration no init to 1 table row', () => {
         assert.equal(
-            convertStatementToRows(parseCode('let a;')),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>a</td><td></td><td></td></tr>'
+            parseStatement(parseCode('let a;')),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td></td></tr>'
         );
     });
 
     it('is parsing a 3 simple variable declaration no init to 3 table row', () => {
         assert.equal(
-            convertStatementToRows(parseCode('let a;\nlet b;\nlet c;')),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>a</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>VariableDeclarator</td><td>b</td><td></td><td></td></tr>' +
-            '<tr><td>3</td><td>VariableDeclarator</td><td>c</td><td></td><td></td></tr>'
+            parseStatement(parseCode('let a;\nlet b;\nlet c;')),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>variable declarator</td><td>b</td><td></td><td></td></tr>' +
+            '<tr><td>3</td><td>variable declarator</td><td>c</td><td></td><td></td></tr>'
         );
     });
 
     it('is parsing a 3 simple variable declaration 2 no init 1 with init to 3 table row', () => {
         assert.equal(
-            convertStatementToRows(parseCode('let a, g;\nlet b = 6;\nlet c;')),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>a</td><td></td><td></td></tr>' +
-            '<tr><td>1</td><td>VariableDeclarator</td><td>g</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>VariableDeclarator</td><td>b</td><td></td><td>6</td></tr>' +
-            '<tr><td>3</td><td>VariableDeclarator</td><td>c</td><td></td><td></td></tr>'
+            parseStatement(parseCode('let a, g;\nlet b = 6;\nlet c;')),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td></td></tr>' +
+            '<tr><td>1</td><td>variable declarator</td><td>g</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>variable declarator</td><td>b</td><td></td><td>6</td></tr>' +
+            '<tr><td>3</td><td>variable declarator</td><td>c</td><td></td><td></td></tr>'
         );
     });
 
     it('is parsing a simple function no body', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `function foo(){
             }`)),
-            '<tr><td>1</td><td>FunctionDeclaration</td><td>foo</td><td></td><td></td></tr>'
+            '<tr><td>1</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>'
         );
     });
 
     it('is parsing a simple function 1 line body', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `function foo(){
                 let a = 'd';
             }`)),
-            '<tr><td>1</td><td>FunctionDeclaration</td><td>foo</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>VariableDeclarator</td><td>a</td><td></td><td>d</td></tr>'
+            '<tr><td>1</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>variable declarator</td><td>a</td><td></td><td>d</td></tr>'
         );
     });
 
     it('is parsing a simple function 2 line body and var declarations', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `let c, g;
                 function foo(){
                 let id = 1;
                 let name = 'maor';
             }`)),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td><td></td></tr>' +
-            '<tr><td>1</td><td>VariableDeclarator</td><td>g</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>FunctionDeclaration</td><td>foo</td><td></td><td></td></tr>' +
-            '<tr><td>3</td><td>VariableDeclarator</td><td>id</td><td></td><td>1</td></tr>' +
-            '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td></td><td>maor</td></tr>'
+            '<tr><td>1</td><td>variable declarator</td><td>c</td><td></td><td></td></tr>' +
+            '<tr><td>1</td><td>variable declarator</td><td>g</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
+            '<tr><td>3</td><td>variable declarator</td><td>id</td><td></td><td>1</td></tr>' +
+            '<tr><td>4</td><td>variable declarator</td><td>name</td><td></td><td>maor</td></tr>'
         );
     });
 
     it('is parse simple assignment expression', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `let c;
                 c = 34;
             `)),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>AssignmentExpression</td><td>c</td><td></td><td>34</td></tr>'
+            '<tr><td>1</td><td>variable declarator</td><td>c</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td>c</td><td></td><td>34</td></tr>'
         );
     });
 
     it('is parsing a function with args 2 line body and var declarations', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `let c, g;
                 function foo(a, b){
                 let id = a; 
                 let name = b;
             }`)),
-            '<tr><td>1</td><td>VariableDeclarator</td><td>c</td><td></td><td></td></tr>' +
-            '<tr><td>1</td><td>VariableDeclarator</td><td>g</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>FunctionDeclaration</td><td>foo</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>VariableDeclarator</td><td>a</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>VariableDeclarator</td><td>b</td><td></td><td></td></tr>' +
-            '<tr><td>3</td><td>VariableDeclarator</td><td>id</td><td></td><td>a</td></tr>' +
-            '<tr><td>4</td><td>VariableDeclarator</td><td>name</td><td></td><td>b</td></tr>'
+            '<tr><td>1</td><td>variable declarator</td><td>c</td><td></td><td></td></tr>' +
+            '<tr><td>1</td><td>variable declarator</td><td>g</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>variable declarator</td><td>a</td><td></td><td></td></tr>' +
+            '<tr><td>2</td><td>variable declarator</td><td>b</td><td></td><td></td></tr>' +
+            '<tr><td>3</td><td>variable declarator</td><td>id</td><td></td><td>a</td></tr>' +
+            '<tr><td>4</td><td>variable declarator</td><td>name</td><td></td><td>b</td></tr>'
         );
     });
 
     it('is parsing a simple while loop', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `while(true){};
             `)),
-            '<tr><td>1</td><td>WhileStatement</td><td></td><td>true</td><td></td></tr>'
+            '<tr><td>1</td><td>while statement</td><td></td><td>true</td><td></td></tr>'
         );
     });
 
     it('is parsing a while loop with condition and body', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `while(a < 3){
                     a=5;
                 };
             `)),
-            '<tr><td>1</td><td>WhileStatement</td><td></td><td>a<3</td><td></td></tr>' +
-            '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>5</td></tr>'
+            '<tr><td>1</td><td>while statement</td><td></td><td>a<3</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td>a</td><td></td><td>5</td></tr>'
         );
     });
 
     it('is parsing a simple if statement', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `if(true){};
             `)),
-            '<tr><td>1</td><td>IfStatement</td><td></td><td>true</td><td></td></tr>'
+            '<tr><td>1</td><td>if statement</td><td></td><td>true</td><td></td></tr>'
         );
     });
 
     it('is parsing a simple if statement', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `if(a < 6){
                     a = 8;
                 };
             `)),
-            '<tr><td>1</td><td>IfStatement</td><td></td><td>a<6</td><td></td></tr>' +
-            '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>8</td></tr>'
+            '<tr><td>1</td><td>if statement</td><td></td><td>a<6</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td>a</td><td></td><td>8</td></tr>'
         );
     });
     it('is parsing a simple if statement with else', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `if(a < 6){
                     a = 8;
                 }
@@ -168,16 +168,16 @@ describe('The javascript parser', () => {
                 a=2;
                 }
             `)),
-            '<tr><td>1</td><td>IfStatement</td><td></td><td>a<6</td><td></td></tr>' +
-            '<tr><td>2</td><td>AssignmentExpression</td><td>a</td><td></td><td>8</td></tr>' +
+            '<tr><td>1</td><td>if statement</td><td></td><td>a<6</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td>a</td><td></td><td>8</td></tr>' +
             '<tr><td>4</td><td>else statement</td><td></td><td></td><td></td></tr>' +
-            '<tr><td>5</td><td>AssignmentExpression</td><td>a</td><td></td><td>2</td></tr>'
+            '<tr><td>5</td><td>assignment expression</td><td>a</td><td></td><td>2</td></tr>'
         );
     });
 
     it('is parsing a if statement with else and else if', () => {
         assert.equal(
-            convertStatementToRows(parseCode(
+            parseStatement(parseCode(
                 `if (a < 2)
                     high = mid - 1
                 else if (X > V)
@@ -185,12 +185,39 @@ describe('The javascript parser', () => {
                 else
                     mid = 4;
             `)),
-            '<tr><td>1</td><td>IfStatement</td><td></td><td>a<2</td><td></td></tr>' +
-            '<tr><td>2</td><td>AssignmentExpression</td><td>high</td><td></td><td>mid-1</td></tr>' +
+            '<tr><td>1</td><td>if statement</td><td></td><td>a<2</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td>high</td><td></td><td>mid-1</td></tr>' +
             '<tr><td>3</td><td>else if statement</td><td></td><td>X>V</td><td></td></tr>' +
-            '<tr><td>4</td><td>AssignmentExpression</td><td>low</td><td></td><td>mid+1</td></tr>' +
+            '<tr><td>4</td><td>assignment expression</td><td>low</td><td></td><td>mid+1</td></tr>' +
             '<tr><td>5</td><td>else statement</td><td></td><td></td><td></td></tr>' +
-            '<tr><td>6</td><td>AssignmentExpression</td><td>mid</td><td></td><td>4</td></tr>'
+            '<tr><td>6</td><td>assignment expression</td><td>mid</td><td></td><td>4</td></tr>'
+        );
+    });
+
+    it('is parsing a member statement ', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `mid[2]= 3;
+            `)),
+            '<tr><td>1</td><td>assignment expression</td><td>mid[2]</td><td></td><td>3</td></tr>'
+        );
+    });
+
+    it('is parsing a function call statement ', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `mid(2);
+            `)),
+            '<tr><td>1</td><td>call expression</td><td>mid(2)</td><td></td><td></td></tr>'
+        );
+    });
+
+    it('is parsing a assign variable function call statement ', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `let a = mid(2);
+            `)),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>mid(2)</td></tr>'
         );
     });
 });
