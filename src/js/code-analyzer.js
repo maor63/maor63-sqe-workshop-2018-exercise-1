@@ -89,7 +89,6 @@ function parseWhileStatement(parsedCode) {
 
 function parseIfStatement(parsedCode, inIfStatement) {
     let index = parsedCode.loc.start.line;
-    let type = parsedCode.type;
     let condition = evalExpression(parsedCode.test);
     let outputRows = '';
     if (inIfStatement)
