@@ -168,11 +168,10 @@ function evalArrayExpression(expression) {
 function evalBinaryExpression(expression, inBinaryExpression) {
     let left = evalExpression(expression.left, true);
     let right = evalExpression(expression.right, true);
-    let operator = expression.operator;
     if (inBinaryExpression)
-        return '({}{}{})'.format(left, operator, right);
+        return '({}{}{})'.format(left, expression.operator, right);
     else
-        return '{}{}{}'.format(left, operator, right);
+        return '{}{}{}'.format(left, expression.operator, right);
 }
 
 function evalIdentifier(expression) {
@@ -180,15 +179,11 @@ function evalIdentifier(expression) {
 }
 
 function evalUnaryExpression(expression) {
-    let argument = evalExpression(expression.argument);
-    let operator = expression.operator;
-    return '{}{}'.format(operator, argument);
+    return '{}{}'.format(expression.operator, evalExpression(expression.argument));
 }
 
 function evalUpdateExpression(expression) {
-    let argument = evalExpression(expression.argument);
-    let operator = expression.operator;
-    return '{}{}'.format(argument, operator);
+    return '{}{}'.format(evalExpression(expression.argument), expression.operator);
 }
 
 function evalExpression(expression, inBinaryExpression = false) {
