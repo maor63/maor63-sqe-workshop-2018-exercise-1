@@ -283,4 +283,13 @@ describe('The javascript parser', () => {
             '<tr><td>1</td><td>update expression</td><td></td><td></td><td>i++</td></tr>'
         );
     });
+
+    it('is parsing a array statement', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `let a=[1,2];
+            `)),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>[1,2]</td></tr>'
+        );
+    });
 });

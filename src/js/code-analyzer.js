@@ -14,6 +14,7 @@ let evalFunctions = {
     UnaryExpression: evalUnaryExpression,
     LogicalExpression: evalBinaryExpression,
     UpdateExpression: evalUpdateExpression,
+    ArrayExpression : evalArrayExpression,
 };
 
 let parseFunctions = {
@@ -145,13 +146,23 @@ function evalLiteral(expression) {
     return expression.value;
 }
 
+function evalElementList(elements) {
+    let args = [];
+    for (let i = 0; i < elements.length; i++) {
+        args.push(evalExpression(elements[i]));
+    }
+    return args;
+}
+
 function evalCallExpression(expression) {
     let callee = evalExpression(expression.callee);
-    let args = [];
-    for (let i = 0; i < expression.arguments.length; i++) {
-        args.push(evalExpression(expression.arguments[i]));
-    }
-    return callee + '(' + args.join(',') + ')';
+    let args = evalElementList(expression.arguments);
+    return callee + '({})'.format(args.join(','));
+}
+
+function evalArrayExpression(expression) {
+    let args = evalElementList(expression.elements);
+    return '[{}]'.format(args.join(','));
 }
 
 function evalBinaryExpression(expression, inBinaryExpression) {
