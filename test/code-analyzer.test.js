@@ -253,4 +253,34 @@ describe('The javascript parser', () => {
             '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>(2+3)/6</td></tr>'
         );
     });
+
+    it('is parsing a logical expression', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `let a = true || false && true;
+            `)),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>true||(false&&true)</td></tr>'
+        );
+    });
+
+    it('is parsing a logical expression with parenthesis', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `let a = (true || false) && true;
+            `)),
+            '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>(true||false)&&true</td></tr>'
+        );
+    });
+
+    it('is parsing a for statement', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `for(let i = 0; i < 10; i++){
+                }
+            `)),
+            '<tr><td>1</td><td>for statement</td><td></td><td>i<10</td><td></td></tr>' +
+            '<tr><td>1</td><td>variable declarator</td><td>i</td><td></td><td>0</td></tr>' +
+            '<tr><td>1</td><td>update expression</td><td></td><td></td><td>i++</td></tr>'
+        );
+    });
 });

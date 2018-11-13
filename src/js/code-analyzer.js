@@ -12,6 +12,8 @@ let evalFunctions = {
     BinaryExpression: evalBinaryExpression,
     Identifier: evalIdentifier,
     UnaryExpression: evalUnaryExpression,
+    LogicalExpression: evalBinaryExpression,
+    UpdateExpression: evalUpdateExpression,
 };
 
 let parseFunctions = {
@@ -26,6 +28,7 @@ let parseFunctions = {
     IfStatement: parseIfStatement,
     CallExpression: parseCallExpression,
     ReturnStatement: parseReturnStatement,
+    ForStatement: parseForStatement,
 };
 
 function createTableRow(index, type, name, condition, value) {
@@ -89,6 +92,15 @@ function parseWhileStatement(parsedCode) {
     return outputRows + parseStatement(parsedCode.body);
 }
 
+function parseForStatement(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    let condition = evalExpression(parsedCode.test);
+    let outputRows = createTableRow(index, 'for statement', '', condition, '');
+    outputRows += parseStatement(parsedCode.init);
+    outputRows += createTableRow(index, 'update expression', '', '', evalExpression(parsedCode.update));
+    return outputRows + parseStatement(parsedCode.body);
+}
+
 function parseIfStatement(parsedCode, inIfStatement) {
     let index = parsedCode.loc.start.line;
     let condition = evalExpression(parsedCode.test);
@@ -146,7 +158,7 @@ function evalBinaryExpression(expression, inBinaryExpression) {
     let left = evalExpression(expression.left, true);
     let right = evalExpression(expression.right, true);
     let operator = expression.operator;
-    if(inBinaryExpression)
+    if (inBinaryExpression)
         return '({}{}{})'.format(left, operator, right);
     else
         return '{}{}{}'.format(left, operator, right);
@@ -160,6 +172,12 @@ function evalUnaryExpression(expression) {
     let argument = evalExpression(expression.argument);
     let operator = expression.operator;
     return '{}{}'.format(operator, argument);
+}
+
+function evalUpdateExpression(expression) {
+    let argument = evalExpression(expression.argument);
+    let operator = expression.operator;
+    return '{}{}'.format(argument, operator);
 }
 
 function evalExpression(expression, inBinaryExpression = false) {
