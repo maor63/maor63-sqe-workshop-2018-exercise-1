@@ -30,6 +30,10 @@ let parseFunctions = {
     CallExpression: parseCallExpression,
     ReturnStatement: parseReturnStatement,
     ForStatement: parseForStatement,
+    SwitchStatement : parseSwitchStatement,
+    SwitchCase : parseSwitchCase,
+    BreakStatement  : parseBreakStatement,
+    ContinueStatement  : parseContinueStatement,
 };
 
 function createTableRow(index, type, name, condition, value) {
@@ -56,7 +60,7 @@ function parseVariableDeclaration(parsedCode) {
 function parseVariableDeclarator(parsedCode) {
     let index = parsedCode.loc.start.line;
     let name = evalExpression(parsedCode.id);
-    let value = parsedCode.init == null ? '' : evalExpression(parsedCode.init);
+    let value = evalExpression(parsedCode.init);
     return createTableRow(index, 'variable declarator', name, '', value);
 }
 
@@ -111,9 +115,7 @@ function parseIfStatement(parsedCode, inIfStatement) {
     else
         outputRows += createTableRow(index, 'if statement', '', condition, '');
     outputRows += parseStatement(parsedCode.consequent);
-    if (parsedCode.alternate !== null) {
-        outputRows += parseStatement(parsedCode.alternate, true);
-    }
+    outputRows += parseStatement(parsedCode.alternate, true);
     return outputRows;
 }
 
@@ -129,8 +131,33 @@ function parseReturnStatement(parsedCode) {
     return createTableRow(index, 'return statement', '', '', value);
 }
 
+function parseSwitchStatement(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    let discriminant = evalExpression(parsedCode.discriminant);
+    let outputRows =  createTableRow(index, 'switch statement', '', discriminant, '');
+    return outputRows + parseStatementList(parsedCode.cases);
+}
+
+function parseSwitchCase(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    let test = evalExpression(parsedCode.test);
+    test = test === '' ? 'default' : test;
+    let outputRows = createTableRow(index, 'switch case', '', test, '');
+    return outputRows + parseStatementList(parsedCode.consequent);
+}
+
+function parseBreakStatement(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    return createTableRow(index, 'break statement', '', '', '');
+}
+
+function parseContinueStatement(parsedCode) {
+    let index = parsedCode.loc.start.line;
+    return createTableRow(index, 'continue statement', '', '', '');
+}
+
 function parseStatement(parsedCode, inIfStatement = false) {
-    if (parsedCode.type in parseFunctions)
+    if (parsedCode !== null && parsedCode.type in parseFunctions)
         return parseFunctions[parsedCode.type](parsedCode, inIfStatement);
     else
         return '';
@@ -187,7 +214,7 @@ function evalUpdateExpression(expression) {
 }
 
 function evalExpression(expression, inBinaryExpression = false) {
-    if (expression.type in evalFunctions)
+    if (expression !== null && expression.type in evalFunctions)
         return evalFunctions[expression.type](expression, inBinaryExpression);
     else
         return '';

@@ -194,6 +194,21 @@ describe('The javascript parser', () => {
         );
     });
 
+    it('is parsing a if statement with else if', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `if (a < 2)
+                    high = mid - 1
+                else if (X > V)
+                    low = mid + 1;
+            `)),
+            '<tr><td>1</td><td>if statement</td><td></td><td>a<2</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td>high</td><td></td><td>mid-1</td></tr>' +
+            '<tr><td>3</td><td>else if statement</td><td></td><td>X>V</td><td></td></tr>' +
+            '<tr><td>4</td><td>assignment expression</td><td>low</td><td></td><td>mid+1</td></tr>'
+        );
+    });
+
     it('is parsing a member statement ', () => {
         assert.equal(
             parseStatement(parseCode(
@@ -272,15 +287,17 @@ describe('The javascript parser', () => {
         );
     });
 
-    it('is parsing a for statement', () => {
+    it('is parsing a for statement with continue', () => {
         assert.equal(
             parseStatement(parseCode(
                 `for(let i = 0; i < 10; i++){
+                    continue;
                 }
             `)),
             '<tr><td>1</td><td>for statement</td><td></td><td>i<10</td><td></td></tr>' +
             '<tr><td>1</td><td>variable declarator</td><td>i</td><td></td><td>0</td></tr>' +
-            '<tr><td>1</td><td>update expression</td><td></td><td></td><td>i++</td></tr>'
+            '<tr><td>1</td><td>update expression</td><td></td><td></td><td>i++</td></tr>' +
+            '<tr><td>2</td><td>continue statement</td><td></td><td></td><td></td></tr>'
         );
     });
 
@@ -290,6 +307,39 @@ describe('The javascript parser', () => {
                 `let a=[1,2];
             `)),
             '<tr><td>1</td><td>variable declarator</td><td>a</td><td></td><td>[1,2]</td></tr>'
+        );
+    });
+
+    it('is parsing a switch case statement', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `switch (varName)
+                {
+                   case "afshin":
+                   case "saeed":
+                   case "larry": 
+                       alert('Hey');
+                       break;
+                
+                   default: 
+                       alert('Default case');
+                }
+            `)),
+            '<tr><td>1</td><td>switch statement</td><td></td><td>varName</td><td></td></tr>' +
+            '<tr><td>3</td><td>switch case</td><td></td><td>afshin</td><td></td></tr>' +
+            '<tr><td>4</td><td>switch case</td><td></td><td>saeed</td><td></td></tr>' +
+            '<tr><td>5</td><td>switch case</td><td></td><td>larry</td><td></td></tr>' +
+            '<tr><td>6</td><td>call expression</td><td>alert(Hey)</td><td></td><td></td></tr>' +
+            '<tr><td>7</td><td>break statement</td><td></td><td></td><td></td></tr>' +
+            '<tr><td>9</td><td>switch case</td><td></td><td>default</td><td></td></tr>' +
+            '<tr><td>10</td><td>call expression</td><td>alert(Default case)</td><td></td><td></td></tr>'
+        );
+    });
+
+    it('is format function working well', () => {
+        assert.equal(
+            'hello {}'.format(undefined) + '{} fun world'.format('nice'),
+            'hello nice fun world'
         );
     });
 });
