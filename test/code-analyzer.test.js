@@ -68,7 +68,7 @@ describe('The javascript parser', () => {
                 let a = 'd';
             }`)),
             '<tr><td>1</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>variable declarator</td><td>a</td><td></td><td>d</td></tr>'
+            '<tr><td>2</td><td>variable declarator</td><td>a</td><td></td><td>\'d\'</td></tr>'
         );
     });
 
@@ -84,7 +84,7 @@ describe('The javascript parser', () => {
             '<tr><td>1</td><td>variable declarator</td><td>g</td><td></td><td></td></tr>' +
             '<tr><td>2</td><td>function declaration</td><td>foo</td><td></td><td></td></tr>' +
             '<tr><td>3</td><td>variable declarator</td><td>id</td><td></td><td>1</td></tr>' +
-            '<tr><td>4</td><td>variable declarator</td><td>name</td><td></td><td>maor</td></tr>'
+            '<tr><td>4</td><td>variable declarator</td><td>name</td><td></td><td>\'maor\'</td></tr>'
         );
     });
 
@@ -95,7 +95,7 @@ describe('The javascript parser', () => {
                 c = 34;
             `)),
             '<tr><td>1</td><td>variable declarator</td><td>c</td><td></td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td>c</td><td></td><td>34</td></tr>'
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>c=34</td></tr>'
         );
     });
 
@@ -134,7 +134,7 @@ describe('The javascript parser', () => {
                 };
             `)),
             '<tr><td>1</td><td>while statement</td><td></td><td>a<3</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td>a</td><td></td><td>5</td></tr>'
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>a=5</td></tr>'
         );
     });
 
@@ -155,7 +155,7 @@ describe('The javascript parser', () => {
                 };
             `)),
             '<tr><td>1</td><td>if statement</td><td></td><td>a<6</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td>a</td><td></td><td>8</td></tr>'
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>a=8</td></tr>'
         );
     });
     it('is parsing a simple if statement with else', () => {
@@ -169,9 +169,9 @@ describe('The javascript parser', () => {
                 }
             `)),
             '<tr><td>1</td><td>if statement</td><td></td><td>a<6</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td>a</td><td></td><td>8</td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>a=8</td></tr>' +
             '<tr><td>4</td><td>else statement</td><td></td><td></td><td></td></tr>' +
-            '<tr><td>5</td><td>assignment expression</td><td>a</td><td></td><td>2</td></tr>'
+            '<tr><td>5</td><td>assignment expression</td><td></td><td></td><td>a=2</td></tr>'
         );
     });
 
@@ -186,11 +186,11 @@ describe('The javascript parser', () => {
                     mid = 4;
             `)),
             '<tr><td>1</td><td>if statement</td><td></td><td>a<2</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td>high</td><td></td><td>mid-1</td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>high=mid-1</td></tr>' +
             '<tr><td>3</td><td>else if statement</td><td></td><td>X>V</td><td></td></tr>' +
-            '<tr><td>4</td><td>assignment expression</td><td>low</td><td></td><td>mid+1</td></tr>' +
+            '<tr><td>4</td><td>assignment expression</td><td></td><td></td><td>low=mid+1</td></tr>' +
             '<tr><td>5</td><td>else statement</td><td></td><td></td><td></td></tr>' +
-            '<tr><td>6</td><td>assignment expression</td><td>mid</td><td></td><td>4</td></tr>'
+            '<tr><td>6</td><td>assignment expression</td><td></td><td></td><td>mid=4</td></tr>'
         );
     });
 
@@ -203,9 +203,9 @@ describe('The javascript parser', () => {
                     low = mid + 1;
             `)),
             '<tr><td>1</td><td>if statement</td><td></td><td>a<2</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td>high</td><td></td><td>mid-1</td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>high=mid-1</td></tr>' +
             '<tr><td>3</td><td>else if statement</td><td></td><td>X>V</td><td></td></tr>' +
-            '<tr><td>4</td><td>assignment expression</td><td>low</td><td></td><td>mid+1</td></tr>'
+            '<tr><td>4</td><td>assignment expression</td><td></td><td></td><td>low=mid+1</td></tr>'
         );
     });
 
@@ -214,7 +214,7 @@ describe('The javascript parser', () => {
             parseStatement(parseCode(
                 `mid[2]= 3;
             `)),
-            '<tr><td>1</td><td>assignment expression</td><td>mid[2]</td><td></td><td>3</td></tr>'
+            '<tr><td>1</td><td>assignment expression</td><td></td><td></td><td>mid[2]=3</td></tr>'
         );
     });
 
@@ -223,7 +223,7 @@ describe('The javascript parser', () => {
             parseStatement(parseCode(
                 `mid(2);
             `)),
-            '<tr><td>1</td><td>call expression</td><td>mid(2)</td><td></td><td></td></tr>'
+            '<tr><td>1</td><td>call expression</td><td></td><td></td><td>mid(2)</td></tr>'
         );
     });
 
@@ -326,13 +326,13 @@ describe('The javascript parser', () => {
                 }
             `)),
             '<tr><td>1</td><td>switch statement</td><td></td><td>varName</td><td></td></tr>' +
-            '<tr><td>3</td><td>switch case</td><td></td><td>afshin</td><td></td></tr>' +
-            '<tr><td>4</td><td>switch case</td><td></td><td>saeed</td><td></td></tr>' +
-            '<tr><td>5</td><td>switch case</td><td></td><td>larry</td><td></td></tr>' +
-            '<tr><td>6</td><td>call expression</td><td>alert(Hey)</td><td></td><td></td></tr>' +
+            '<tr><td>3</td><td>switch case</td><td></td><td>"afshin"</td><td></td></tr>' +
+            '<tr><td>4</td><td>switch case</td><td></td><td>"saeed"</td><td></td></tr>' +
+            '<tr><td>5</td><td>switch case</td><td></td><td>"larry"</td><td></td></tr>' +
+            '<tr><td>6</td><td>call expression</td><td></td><td></td><td>alert(\'Hey\')</td></tr>' +
             '<tr><td>7</td><td>break statement</td><td></td><td></td><td></td></tr>' +
             '<tr><td>9</td><td>switch case</td><td></td><td>default</td><td></td></tr>' +
-            '<tr><td>10</td><td>call expression</td><td>alert(Default case)</td><td></td><td></td></tr>'
+            '<tr><td>10</td><td>call expression</td><td></td><td></td><td>alert(\'Default case\')</td></tr>'
         );
     });
 
@@ -340,6 +340,33 @@ describe('The javascript parser', () => {
         assert.equal(
             'hello {}'.format(undefined) + '{} fun world'.format('nice'),
             'hello nice fun world'
+        );
+    });
+
+    it('is parse for in statement', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `for (x in person) {
+                    text += person[x] + " ";
+                } 
+            `)),
+            '<tr><td>1</td><td>for in statement</td><td></td><td>x in person</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>text=person[x]+" "</td></tr>'
+        );
+    });
+
+    it('is parse do while statement', () => {
+        assert.equal(
+            parseStatement(parseCode(
+                `do {
+                    text += "The number is " + i;
+                    i++;
+                }
+                while (i < 5);
+            `)),
+            '<tr><td>1</td><td>do while statement</td><td></td><td>i<5</td><td></td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>text="The number is "+i</td></tr>' +
+            '<tr><td>3</td><td>update expression</td><td></td><td></td><td>i++</td></tr>'
         );
     });
 });
