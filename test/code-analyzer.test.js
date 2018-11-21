@@ -351,7 +351,7 @@ describe('The javascript parser', () => {
                 } 
             `)),
             '<tr><td>1</td><td>for in statement</td><td></td><td>x in person</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>text=person[x]+" "</td></tr>'
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>text+=person[x]+" "</td></tr>'
         );
     });
 
@@ -365,7 +365,7 @@ describe('The javascript parser', () => {
                 while (i < 5);
             `)),
             '<tr><td>1</td><td>do while statement</td><td></td><td>i<5</td><td></td></tr>' +
-            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>text="The number is "+i</td></tr>' +
+            '<tr><td>2</td><td>assignment expression</td><td></td><td></td><td>text+="The number is "+i</td></tr>' +
             '<tr><td>3</td><td>update expression</td><td></td><td></td><td>i++</td></tr>'
         );
     });
